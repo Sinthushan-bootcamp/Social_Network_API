@@ -1,0 +1,28 @@
+const router = require('express').Router();
+const {
+  getThoughts,
+  getSingleThought,
+  createThought,
+  updateThought,
+  deleteThought,
+  addThoughtReaction,
+  removeThoughtReaction,
+} = require('../../controllers/videoController');
+
+
+router.route('/').get(getThoughts).post(createThought);
+
+
+router
+  .route('/:videoId')
+  .get(getSingleThought)
+  .put(updateThought)
+  .delete(deleteThought);
+
+
+router.route('/:videoId/responses').post(addThoughtReaction);
+
+
+router.route('/:videoId/responses/:responseId').delete(removeThoughtReaction);
+
+module.exports = router;
