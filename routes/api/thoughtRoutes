@@ -7,22 +7,22 @@ const {
   deleteThought,
   addThoughtReaction,
   removeThoughtReaction,
-} = require('../../controllers/videoController');
+} = require('../../controllers/thoughtController');
 
 
 router.route('/').get(getThoughts).post(createThought);
 
 
 router
-  .route('/:videoId')
+  .route('/:thoughtId')
   .get(getSingleThought)
   .put(updateThought)
   .delete(deleteThought);
 
 
-router.route('/:videoId/responses').post(addThoughtReaction);
+router.route('/:thoughtId/reactions').post(addThoughtReaction);
 
 
-router.route('/:videoId/responses/:responseId').delete(removeThoughtReaction);
+router.route('/:thoughtId/reactions/:reactionId').delete(removeThoughtReaction);
 
 module.exports = router;

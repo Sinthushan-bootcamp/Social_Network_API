@@ -34,7 +34,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Delete a user and associated apps
+
   async deleteUser(req, res) {
     try {
       const user = await User.findOneAndDelete({ _id: req.params.userId });
@@ -43,7 +43,7 @@ module.exports = {
         return res.status(404).json({ message: 'No user with that ID' });
       }
 
-      await Thought.deleteMany({ _id: { $in: user.applications } });
+      await Thought.deleteMany({ _id: { $in: user.thoughts } });
       res.json({ message: 'User and associated thoughts deleted!' })
     } catch (err) {
       res.status(500).json(err);
@@ -52,8 +52,8 @@ module.exports = {
   async addFriend(req, res) {
     try {
       const user = await User.findOneAndUpdate(
-        { _id: req.body.userId },
-        { $addToSet: { friends: friendId} },
+        { _id: req.params.userId },
+        { $addToSet: { friends: req.params.friendId} },
         { new: true }
       );
 
@@ -73,8 +73,8 @@ module.exports = {
   async deleteFriend(req, res) {
     try {
       const user = await User.findOneAndUpdate(
-        { _id: req.body.userId },
-        { $pull: { friends: friendId} },
+        { _id: req.params.userId },
+        { $pull: { friends: req.params.friendId} },
         { new: true }
       );
 
