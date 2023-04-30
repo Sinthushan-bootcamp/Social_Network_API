@@ -1,6 +1,7 @@
 const { Thought, User } = require('../models');
 
 module.exports = {
+// controller to Get all thoughts
   async getThoughts(req, res) {
     try {
       const thoughts = await Thought.find();
@@ -9,10 +10,10 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+// controller to Get single thought
   async getSingleThought(req, res) {
     try {
       const thought = await Thought.findOne({ _id: req.params.thoughtId })
-      console.log(req.params.thoughtId)
       if (!thought) {
         return res.status(404).json({ message: 'No thought with that ID' });
       }
@@ -22,10 +23,12 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-
+// controller to Create a thought
   async createThought(req, res) {
     try {
-      const thought = await Thought.create(req.body);
+      const thought = await Thought.create(req.body); // create the thought
+      // all thoughts are associated with a User
+      // when a thought is created we need to add that thought to the passed in userID
       const user = await User.findOneAndUpdate(
         { _id: req.body.userId },
         { $addToSet: { thoughts: thought._id } },
@@ -44,12 +47,14 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+// controller to Update a thought
   async updateThought(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
-        { $set: req.body },
-        { runValidators: true, new: true }
+        { $set: req.body }, // we use the set operator to update the thought
+        // we set runValidators to true so any validation will be run and  we set new to true so mongoose returns the updated document
+        { runValidators: true, new: true } 
       );
 
       if (!thought) {
@@ -62,6 +67,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+// controller to Delete a thought
   async deleteThought(req, res) {
     try {
       const thought = await Thought.findOneAndRemove({ _id: req.params.thoughtId });
@@ -73,6 +79,7 @@ module.exports = {
       const user = await User.findOneAndUpdate(
         { thoughts: req.params.thoughtId },
         { $pull: { thoughts: req.params.thoughtId } },
+        // we set new to true so mongoose returns the updated User document with thought removed
         { new: true }
       );
 
@@ -87,12 +94,14 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-
+// controller to add a reaction
   async addThoughtReaction(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
-        { $addToSet: { reactions: req.body } },
+        // since reaction is not an object we just need to add the reaction to the thought's reactions array
+        { $addToSet: { reactions: req.body } }, 
+        // we set runValidators to true so any validation will be run and  we set new to true so mongoose returns the updated document
         { runValidators: true, new: true }
       );
 
@@ -105,11 +114,12 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-
+// controller to remove a reaction
   async removeThoughtReaction(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
+        // removes reaction based on reactionID
         { $pull: { reactions: { reactionId: req.params.reactionId } } },
         { runValidators: true, new: true }
       )
